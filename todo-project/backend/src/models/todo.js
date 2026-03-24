@@ -1,9 +1,6 @@
 class TodoModel {
   constructor() {
-    this.todos = [
-      { id: 1, title: 'Learn Next.js', completed: false, createdAt: new Date().toISOString() },
-      { id: 2, title: 'Build a Todo API', completed: true, createdAt: new Date().toISOString() }
-    ];
+    this.todos = [];
     this.nextId = 3;
   }
 
@@ -29,7 +26,7 @@ class TodoModel {
   update(id, updates) {
     const todo = this.getById(id);
     if (!todo) return null;
-    
+
     Object.assign(todo, updates);
     return todo;
   }
@@ -37,13 +34,12 @@ class TodoModel {
   delete(id) {
     const index = this.todos.findIndex(todo => todo.id === parseInt(id));
     if (index === -1) return false;
-    
+
     this.todos.splice(index, 1);
     return true;
   }
 }
 
-// Singleton instance
 const todoModel = new TodoModel();
 
 module.exports = todoModel;

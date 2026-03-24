@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Routes
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Todo API is running' });
+  res.json({ status: 'OK', message: 'Not Todo API is running' });
 });
 
 app.use('/api/todos', todoRoutes);
