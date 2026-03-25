@@ -1,0 +1,58 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.myapp.com
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/myapp:staging
+            ${{ secrets.DOCKER_USERNAME }}/myapp:staging-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Deploy to staging server
+        run: |
+          echo "Deploying to staging environment..."
+          # SSH into staging server and update container
+          # ssh user@staging-server "docker pull myapp:staging && docker-compose up -d"
+      
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests..."
+          # curl https://staging.myapp.com/health
+          # Run critical E2E tests
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployed to staging successfully!"
+          else
+            echo "❌ Staging deployment failed!"
+          fi
