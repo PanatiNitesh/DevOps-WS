@@ -1,0 +1,13 @@
+name: CI Pipeline              # Workflow name (shows in GitHub UI)
+
+on: [push, pull_request]      # When to run this workflow
+
+jobs:                          # Define jobs
+  build:                       # Job ID
+    runs-on: ubuntu-latest     # Which runner to use
+    steps:                     # Steps to execute
+      - name: Checkout code    # Step name
+        uses: actions/checkout@v4  # Use an action
+      
+      - name: Run tests        # Another step
+        run: npm test          # Run a command
