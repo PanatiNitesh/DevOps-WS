@@ -17,6 +17,7 @@ jobs:
 
   job2:
     runs-on: ubuntu-latest
+    needs: job1                        # Waits for job1 (backend) to complete
     defaults:
       run:
         working-directory: todo-project/frontend
@@ -27,4 +28,10 @@ jobs:
           node-version: 20
       - run: npm install --legacy-peer-deps
       - run: npm run build
+
+  job3:
+    runs-on: ubuntu-latest
+    needs: [job1, job2]                # Waits for BOTH job1 and job2 to complete
+    steps:
+      - run: echo "Both Backend (job1) and Frontend (job2) have completed successfully!"
 
