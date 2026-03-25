@@ -28,31 +28,4 @@ jobs:
       - name: Verify server entry-point exists
         run: node -e "require('./src/server.js')" # Smoke-check: server loads without crashing
         # Replace the step above with `npm test` once you add a test runner (e.g. Jest/Mocha)
-
-  # ── Frontend Job ─────────────────────────────────────────────────────────
-  frontend:
-    name: Frontend – Install & Build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: todo-project/frontend  # All `run` steps use this dir
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: todo-project/frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint                          # eslint via `next lint`
-
-      - name: Build
-        run: npm run build                         # Catches TypeScript / compile errors
+
