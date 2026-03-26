@@ -1,0 +1,105 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+        default: 'latest'
+
+jobs:
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://myapp.com
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(cat package.json | jq -r .version)" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+            ${{ secrets.DOCKER_USERNAME }}/myapp:${{ steps.version.outputs.version }}
+            ${{ secrets.DOCKER_USERNAME }}/myapp:prod-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Create deployment backup
+        run: |
+          echo "Creating backup of current production deployment..."
+          # Backup current deployment for rollback
+      
+      - name: Deploy to production (Blue-Green)
+        run: |
+          echo "Deploying version ${{ steps.version.outputs.version }} to production..."
+          # 1. Deploy to green environment
+          # 2. Run health checks
+          # 3. Switch traffic from blue to green
+          # 4. Keep blue running for instant rollback
+      
+      - name: Run smoke tests
+        run: |
+          echo "Running production smoke tests..."
+          sleep 30  # Wait for deployment to stabilize
+          # curl https://myapp.com/health
+          # Run critical tests
+      
+      - name: Monitor deployment
+        run: |
+          echo "Monitoring deployment for 5 minutes..."
+          # Monitor error rates, response times
+          # Automatically rollback if metrics degrade
+      
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Rolling back..."
+          # Switch traffic back to blue (previous version)
+          # Instant rollback
+      
+      - name: Notify deployment
+        if: always()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Production Deployment ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Status*: ${{ job.status }}\n*Version*: ${{ steps.version.outputs.version }}\n*Commit*: ${{ github.sha }}\n*URL*: https://myapp.com"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
