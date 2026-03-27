@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: todo-app
+data:
+  DB_HOST: "postgres-service"
+  DB_NAME: "tododb"
+  DB_USER: "postgres"
+  REDIS_HOST: "redis-service"
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"

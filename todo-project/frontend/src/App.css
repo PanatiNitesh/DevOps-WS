@@ -1,0 +1,64 @@
+.App {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.todos {
+  display: grid;
+  gap: 15px;
+}
+
+.todo {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.todo.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.todo h3 {
+  margin: 0 0 10px 0;
+  cursor: pointer;
+}
+
+.todo p {
+  margin: 0 0 10px 0;
+  color: #666;
+}
